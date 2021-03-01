@@ -18,7 +18,7 @@
 use serenity::{futures::AsyncReadExt, prelude::*};
 use serenity::model::prelude::*;
 use serenity::framework::standard::{ 
-    CommandResult,
+    Args, CommandResult,
     macros::command,
 };
 use rand::{thread_rng, Rng};
@@ -29,21 +29,66 @@ const HELP_MESSAGE: &str = "
 
 You have summoned me. Let's see about getting you what you need.
 
-=> !#help
+=> !!help [command]
           
-=> !#math [expression]
+=> !!math [expression]
 
-=> !#coinflip
+=> !!coinflip
 
-=> !#diceroll
+=> !!diceroll
 
-=> !#crypto [currency] // Broken AF
+=> !!crypto [currency] // Broken AF
 
-=> !#quit
+=> !!quit
           
 I hope that resolves your issue!
 -- Ferris```
           
+";
+
+const HELP_MESSAGE_MATH: &str = "
+```meval supports basic mathematical operations on floating point numbers:
+
+binary operators: +, -, *, /, % (remainder), ^ (power)
+unary operators: +, -
+It supports custom variables and functions like x, weight, C_0, f(1), etc. A variable or function name must start with [a-zA-Z_] and can contain only [a-zA-Z0-9_]. Custom functions with a variable number of arguments are also supported.
+
+Build-ins (given by the context Context::new() and when no context provided) currently supported:
+
+functions implemented using functions of the same name in Rust std library:
+
+sqrt, abs
+exp, ln
+sin, cos, tan, asin, acos, atan, atan2
+sinh, cosh, tanh, asinh, acosh, atanh
+floor, ceil, round
+signum
+other functions:
+
+max(x, ...), min(x, ...): maximum and minimumum of 1 or more numbers
+constants:
+
+pi
+e
+
+Usage:: !!math [expression]```
+";
+
+const HELP_MESSAGE_COIN: &str = "
+```Flips a coin!
+Usage: !!coinflip```
+";
+
+const HELP_MESSAGE_DICE: &str = "
+```Rolls a single die!
+Usage: !!diceroll```
+";
+
+const HELP_MESSAGE_CRYPTO: &str = "
+```Queries rate.sx for the latest crypto exchange prices.
+Get general info: !!crypto
+Get specific info: !!crypto [coin name]
+```
 ";
 
 #[command]
@@ -54,8 +99,14 @@ async fn ping(ctx: &Context, msg: &Message) -> CommandResult {
 }
 
 #[command]
-async fn help(ctx: &Context, msg: &Message) -> CommandResult {
-    msg.reply(&ctx.http, HELP_MESSAGE).await?;
+async fn help(ctx: &Context, msg: &Message, arg: Args) -> CommandResult {
+    match arg.message() {
+        "coinflip" => msg.reply(&ctx.http, HELP_MESSAGE_COIN).await?,
+        "diceroll" => msg.reply(&ctx.http, HELP_MESSAGE_DICE).await?,
+        "math" => msg.reply(&ctx.http, HELP_MESSAGE_MATH).await?,
+        "crypto" => msg.reply(&ctx.http, HELP_MESSAGE_CRYPTO).await?,
+        _ => msg.reply(&ctx.http, HELP_MESSAGE).await?,
+    };
 
     Ok(())
 }

@@ -23,7 +23,7 @@ use serenity::framework::standard::{
 };
 
 #[command]
-pub async fn math(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
+pub async fn math(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
     let r = meval::eval_str(args.message().to_string()).unwrap();
     msg.channel_id.say(&ctx.http, r).await?;
 

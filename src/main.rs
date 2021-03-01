@@ -73,13 +73,12 @@ struct General;
 #[tokio::main]
 async fn main() {
     // This will load the environment variables located at `./.env`, relative to
-    // the CWD. See `./.env.example` for an example on how to structure this.
+    // the CWD.
     dotenv::dotenv().expect("Failed to load .env file");
 
     // Initialize the logger to use environment variables.
     //
-    // In this case, a good default is setting the environment variable
-    // `RUST_LOG` to debug`.
+    // Currently set to "info"
     let subscriber = FmtSubscriber::builder()
         .with_env_filter(EnvFilter::from_default_env())
         .finish();
@@ -107,7 +106,7 @@ async fn main() {
     let framework = StandardFramework::new()
         .configure(|c| c
                    .owners(owners)
-                   .prefix("!#"))
+                   .prefix("!!"))
         .group(&GENERAL_GROUP);
 
     let mut client = Client::builder(&token)
