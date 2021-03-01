@@ -15,13 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with RustyBot.  If not, see <https://www.gnu.org/licenses/>.
 
-use serenity::{futures::AsyncReadExt, prelude::*};
+use serenity::prelude::*;
 use serenity::model::prelude::*;
 use serenity::framework::standard::{ 
     Args, CommandResult,
     macros::command,
 };
-use rand::{thread_rng, Rng};
 use webpage::{Webpage, WebpageOptions};
 
 const HELP_MESSAGE: &str = "
@@ -42,8 +41,7 @@ You have summoned me. Let's see about getting you what you need.
 => !!quit
           
 I hope that resolves your issue!
--- Ferris```
-          
+-- Ferris```   
 ";
 
 const HELP_MESSAGE_MATH: &str = "
@@ -51,9 +49,6 @@ const HELP_MESSAGE_MATH: &str = "
 
 binary operators: +, -, *, /, % (remainder), ^ (power)
 unary operators: +, -
-It supports custom variables and functions like x, weight, C_0, f(1), etc. A variable or function name must start with [a-zA-Z_] and can contain only [a-zA-Z0-9_]. Custom functions with a variable number of arguments are also supported.
-
-Build-ins (given by the context Context::new() and when no context provided) currently supported:
 
 functions implemented using functions of the same name in Rust std library:
 
@@ -87,8 +82,7 @@ Usage: !!diceroll```
 const HELP_MESSAGE_CRYPTO: &str = "
 ```Queries rate.sx for the latest crypto exchange prices.
 Get general info: !!crypto
-Get specific info: !!crypto [coin name]
-```
+Get specific info: !!crypto [coin name]```
 ";
 
 #[command]
@@ -112,25 +106,6 @@ async fn help(ctx: &Context, msg: &Message, arg: Args) -> CommandResult {
 }
 
 #[command]
-async fn coinflip(ctx: &Context, msg: &Message) -> CommandResult {
-    if coinflip_helper() {
-        msg.reply(&ctx.http, "Heads").await?;
-
-    } else {
-        msg.reply(&ctx.http, "Tails").await?;
-    }
-
-    Ok(())
-}
-
-#[command]
-async fn diceroll(ctx: &Context, msg: &Message) -> CommandResult {
-    msg.reply(&ctx.http, diceroll_helper()).await?;
-
-    Ok(())
-}
-
-#[command]
 async fn crypto(ctx: &Context, msg: &Message) -> CommandResult {
     let url: String = String::from("http://rate.sx/") + &msg.content;
     let info = Webpage::from_url(&url, WebpageOptions::default())
@@ -138,14 +113,4 @@ async fn crypto(ctx: &Context, msg: &Message) -> CommandResult {
     msg.reply(&ctx.http, &info.html.text_content).await?; // Too long to print :(
 
     Ok(())
-}
-
-fn coinflip_helper() -> bool {
-    let mut rng = thread_rng();
-    rng.gen_bool(1.0 / 2.0)
-}
-
-fn diceroll_helper() -> i32 {
-    let mut rng = thread_rng();
-    rng.gen_range(1..7)
 }

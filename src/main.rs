@@ -33,18 +33,16 @@ use serenity::{
     model::{event::ResumedEvent, gateway::Ready},
     prelude::*,
 };
-
 use tracing::{error, info};
 use tracing_subscriber::{
     FmtSubscriber,
     EnvFilter,
 };
-
-
 use commands::{
     math::*,
     meta::*,
     owner::*,
+    fun::*,
 };
 
 pub struct ShardManagerContainer;
