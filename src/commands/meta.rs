@@ -15,28 +15,31 @@
 // You should have received a copy of the GNU General Public License
 // along with RustyBot.  If not, see <https://www.gnu.org/licenses/>.
 
-use serenity::prelude::*;
+use serenity::{futures::AsyncReadExt, prelude::*};
 use serenity::model::prelude::*;
 use serenity::framework::standard::{ 
     CommandResult,
     macros::command,
 };
 use rand::{thread_rng, Rng};
+use webpage::{Webpage, WebpageOptions};
 
 const HELP_MESSAGE: &str = "
 ```Hello there, Human!
 
 You have summoned me. Let's see about getting you what you need.
 
-=> $$help
+=> !#help
           
-=> $$math [expression]
+=> !#math [expression]
 
-=> $$coinflip
+=> !#coinflip
 
-=> $$diceroll
+=> !#diceroll
 
-=> $$quit
+=> !#crypto [currency] // Broken AF
+
+=> !#quit
           
 I hope that resolves your issue!
 -- Ferris```
@@ -72,6 +75,16 @@ async fn coinflip(ctx: &Context, msg: &Message) -> CommandResult {
 #[command]
 async fn diceroll(ctx: &Context, msg: &Message) -> CommandResult {
     msg.reply(&ctx.http, diceroll_helper()).await?;
+
+    Ok(())
+}
+
+#[command]
+async fn crypto(ctx: &Context, msg: &Message) -> CommandResult {
+    let url: String = String::from("http://rate.sx/") + &msg.content;
+    let info = Webpage::from_url(&url, WebpageOptions::default())
+        .expect("Could not read from URL");
+    msg.reply(&ctx.http, &info.html.text_content).await?; // Too long to print :(
 
     Ok(())
 }

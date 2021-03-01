@@ -67,7 +67,7 @@ impl EventHandler for Handler {
 }
 
 #[group]
-#[commands(math, ping, coinflip, diceroll, help, quit)]
+#[commands(math, ping, coinflip, diceroll, crypto, help, quit)]
 struct General;
 
 #[tokio::main]
@@ -107,7 +107,7 @@ async fn main() {
     let framework = StandardFramework::new()
         .configure(|c| c
                    .owners(owners)
-                   .prefix("$$"))
+                   .prefix("!#"))
         .group(&GENERAL_GROUP);
 
     let mut client = Client::builder(&token)
