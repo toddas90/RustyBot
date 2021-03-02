@@ -17,6 +17,7 @@
 
 use serenity::prelude::*;
 use tracing::error;
+use serenity::utils::Colour;
 use serenity::model::prelude::*;
 use serenity::framework::standard::{ 
     Args, CommandResult,
@@ -25,7 +26,7 @@ use serenity::framework::standard::{
 use webpage::{Webpage, WebpageOptions};
 
 const HELP_MESSAGE: &str = "
-```Hello there, Human!
+Hello there, Human!
 
 You have summoned me. Let's see about getting you what you need.
 
@@ -42,11 +43,11 @@ You have summoned me. Let's see about getting you what you need.
 => !!quit
           
 I hope that resolves your issue!
--- Ferris```
+-- Ferris
 ";
 
 const HELP_MESSAGE_MATH: &str = "
-```meval supports basic mathematical operations on floating point numbers:
+meval supports basic mathematical operations on floating point numbers:
 
 binary operators: +, -, *, /, % (remainder), ^ (power)
 unary operators: +, -
@@ -68,24 +69,26 @@ constants:
 pi
 e
 
-Usage: !!math [expression]```
+Usage: !!math [expression]
 ";
 
 const HELP_MESSAGE_COIN: &str = "
-```Flips a coin!
-Usage: !!coinflip```
+Flips a coin!
+Usage: !!coinflip
 ";
 
 const HELP_MESSAGE_DICE: &str = "
-```Rolls a single die!
-Usage: !!diceroll```
+Rolls a single die!
+Usage: !!diceroll
 ";
 
 const HELP_MESSAGE_CRYPTO: &str = "
-```Queries rate.sx for the latest crypto exchange prices.
+Queries rate.sx for the latest crypto exchange prices.
 Usage: !!crypto
-Usage: !!crypto [coin name]```
+Usage: !!crypto [coin name]
 ";
+
+const ORANGE: Colour = Colour::ORANGE;
 
 #[command]
 async fn ping(ctx: &Context, msg: &Message) -> CommandResult {
@@ -99,11 +102,56 @@ async fn ping(ctx: &Context, msg: &Message) -> CommandResult {
 #[command]
 async fn help(ctx: &Context, msg: &Message, arg: Args) -> CommandResult {
     match arg.message() {
-        "coinflip" => msg.reply(&ctx.http, HELP_MESSAGE_COIN).await?,
-        "diceroll" => msg.reply(&ctx.http, HELP_MESSAGE_DICE).await?,
-        "math" => msg.reply(&ctx.http, HELP_MESSAGE_MATH).await?,
-        "crypto" => msg.reply(&ctx.http, HELP_MESSAGE_CRYPTO).await?,
-        _ => msg.reply(&ctx.http, HELP_MESSAGE).await?,
+        "coinflip" =>     msg.channel_id.send_message(&ctx, |m| {
+                            m.content(&msg.content);
+                            m.embed(|e| {
+                                e.title("Coinflip");
+                                e.description(HELP_MESSAGE_COIN);
+                                e.color(ORANGE);
+                                e
+                            });
+                            m
+                        }).await?,
+        "diceroll" =>     msg.channel_id.send_message(&ctx, |m| {
+                            m.content(&msg.content);
+                            m.embed(|e| {
+                                e.title("Diceroll");
+                                e.description(HELP_MESSAGE_DICE);
+                                e.color(ORANGE);
+                                e
+                            });
+                            m
+                        }).await?,
+        "crypto" =>     msg.channel_id.send_message(&ctx, |m| {
+                            m.content(&msg.content);
+                            m.embed(|e| {
+                                e.title("Crypto");
+                                e.description(HELP_MESSAGE_CRYPTO);
+                                e.color(ORANGE);
+                                e
+                            });
+                            m
+                        }).await?,
+        "math" =>     msg.channel_id.send_message(&ctx, |m| {
+                            m.content(&msg.content);
+                            m.embed(|e| {
+                                e.title("Math");
+                                e.description(HELP_MESSAGE_MATH);
+                                e.color(ORANGE);
+                                e
+                            });
+                            m
+                        }).await?,
+        _ =>     msg.channel_id.send_message(&ctx, |m| {
+                            m.content(&msg.content);
+                            m.embed(|e| {
+                                e.title("Help");
+                                e.description(HELP_MESSAGE);
+                                e.color(ORANGE);
+                                e
+                            });
+                            m
+                        }).await?,
     };
 
     Ok(())

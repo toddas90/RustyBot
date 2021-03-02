@@ -65,7 +65,7 @@ impl EventHandler for Handler {
 }
 
 #[group]
-#[commands(math, ping, coinflip, diceroll, crypto, help, quit)]
+#[commands(math, ping, coinflip, diceroll, crypto, help, quit, say)]
 struct General;
 
 #[tokio::main]

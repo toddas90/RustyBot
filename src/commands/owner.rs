@@ -39,3 +39,11 @@ async fn quit(ctx: &Context, msg: &Message) -> CommandResult {
 
     Ok(())
 }
+
+#[command]
+#[owners_only]
+async fn say(ctx: &Context, msg: &Message) -> CommandResult {
+    msg.channel_id.say(ctx, &msg.content).await?;
+
+    Ok(())
+}
