@@ -18,6 +18,7 @@
 use rand::{thread_rng, Rng};
 use serenity::prelude::*;
 use serenity::model::prelude::*;
+use tracing::error;
 use serenity::framework::standard::{ 
     CommandResult,
     macros::command,
@@ -26,10 +27,13 @@ use serenity::framework::standard::{
 #[command]
 async fn coinflip(ctx: &Context, msg: &Message) -> CommandResult {
     if coinflip_helper() {
-        msg.reply(&ctx.http, "Heads").await?;
-
+        if let Err(why) = msg.reply(&ctx.http, "Heads").await {
+            error!("Error sending message: {:?}", why);
+        }
     } else {
-        msg.reply(&ctx.http, "Tails").await?;
+        if let Err(why) = msg.reply(&ctx.http, "Tails").await {
+            error!("Error sending message: {:?}", why);
+        }
     }
 
     Ok(())
@@ -37,7 +41,9 @@ async fn coinflip(ctx: &Context, msg: &Message) -> CommandResult {
 
 #[command]
 async fn diceroll(ctx: &Context, msg: &Message) -> CommandResult {
-    msg.reply(&ctx.http, diceroll_helper()).await?;
+    if let Err(why) = msg.reply(&ctx.http, diceroll_helper()).await {
+        error!("Error sending message: {:?}", why);
+    }
 
     Ok(())
 }

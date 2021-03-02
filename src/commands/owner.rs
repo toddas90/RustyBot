@@ -37,7 +37,5 @@ async fn quit(ctx: &Context, msg: &Message) -> CommandResult {
         return Ok(());
     }
 
-
-
     Ok(())
 }

@@ -16,6 +16,7 @@
 // along with RustyBot.  If not, see <https://www.gnu.org/licenses/>.
 
 use serenity::prelude::*;
+use tracing::error;
 use serenity::model::prelude::*;
 use serenity::framework::standard::{ 
     Args, CommandResult,
@@ -41,7 +42,7 @@ You have summoned me. Let's see about getting you what you need.
 => !!quit
           
 I hope that resolves your issue!
--- Ferris```   
+-- Ferris```
 ";
 
 const HELP_MESSAGE_MATH: &str = "
@@ -58,6 +59,7 @@ sin, cos, tan, asin, acos, atan, atan2
 sinh, cosh, tanh, asinh, acosh, atanh
 floor, ceil, round
 signum
+
 other functions:
 
 max(x, ...), min(x, ...): maximum and minimumum of 1 or more numbers
@@ -66,7 +68,7 @@ constants:
 pi
 e
 
-Usage:: !!math [expression]```
+Usage: !!math [expression]```
 ";
 
 const HELP_MESSAGE_COIN: &str = "
@@ -81,13 +83,15 @@ Usage: !!diceroll```
 
 const HELP_MESSAGE_CRYPTO: &str = "
 ```Queries rate.sx for the latest crypto exchange prices.
-Get general info: !!crypto
-Get specific info: !!crypto [coin name]```
+Usage: !!crypto
+Usage: !!crypto [coin name]```
 ";
 
 #[command]
 async fn ping(ctx: &Context, msg: &Message) -> CommandResult {
-    msg.reply(&ctx.http, "Pong!").await?;
+    if let Err(why) = msg.reply(&ctx.http, "Pong! : )").await {
+        error!("Error sending message: {:?}", why);
+    }
 
     Ok(())
 }
@@ -110,7 +114,10 @@ async fn crypto(ctx: &Context, msg: &Message) -> CommandResult {
     let url: String = String::from("http://rate.sx/") + &msg.content;
     let info = Webpage::from_url(&url, WebpageOptions::default())
         .expect("Could not read from URL");
-    msg.reply(&ctx.http, &info.html.text_content).await?; // Too long to print :(
+        
+    if let Err(why) = msg.reply(&ctx.http, info.html.text_content).await {
+        error!("Error sending message: {:?}", why);
+    }
 
     Ok(())
 }

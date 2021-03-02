@@ -16,16 +16,37 @@
 // along with RustyBot.  If not, see <https://www.gnu.org/licenses/>.
 
 use serenity::prelude::*;
+use tracing::error;
 use serenity::model::prelude::*;
 use serenity::framework::standard::{
     Args, CommandResult,
     macros::command,
 };
 
+// #[command]
+// pub async fn math(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
+//     let r = meval::eval_str(args.message().to_string()).unwrap();
+//     msg.channel_id.say(&ctx.http, r).await?;
+
+//     Ok(())
+// }
+
 #[command]
 pub async fn math(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
-    let r = meval::eval_str(args.message().to_string()).unwrap();
-    msg.channel_id.say(&ctx.http, r).await?;
+    let _expr: f64 = match meval::eval_str(args.message().to_string()) {
+        Ok(num) => {
+            if let Err(why) = msg.reply(&ctx.http, num).await {
+                error!("Error sending message: {:?}", why);
+            }
+            num
+        },
+        Err(err) => {
+            if let Err(why) = msg.reply(&ctx.http, err).await {
+                error!("Error sending message: {:?}", why);
+            }
+            0.0
+        }
+    };
 
     Ok(())
 }
