@@ -102,58 +102,17 @@ async fn ping(ctx: &Context, msg: &Message) -> CommandResult {
 #[command]
 async fn help(ctx: &Context, msg: &Message, arg: Args) -> CommandResult {
     match arg.message() {
-        "coinflip" =>     msg.channel_id.send_message(&ctx, |m| {
-                            m.content(&msg.content);
-                            m.embed(|e| {
-                                e.title("Coinflip");
-                                e.description(HELP_MESSAGE_COIN);
-                                e.color(ORANGE);
-                                e
-                            });
-                            m
-                        }).await?,
-        "diceroll" =>     msg.channel_id.send_message(&ctx, |m| {
-                            m.content(&msg.content);
-                            m.embed(|e| {
-                                e.title("Diceroll");
-                                e.description(HELP_MESSAGE_DICE);
-                                e.color(ORANGE);
-                                e
-                            });
-                            m
-                        }).await?,
-        "crypto" =>     msg.channel_id.send_message(&ctx, |m| {
-                            m.content(&msg.content);
-                            m.embed(|e| {
-                                e.title("Crypto");
-                                e.description(HELP_MESSAGE_CRYPTO);
-                                e.color(ORANGE);
-                                e
-                            });
-                            m
-                        }).await?,
-        "math" =>     msg.channel_id.send_message(&ctx, |m| {
-                            m.content(&msg.content);
-                            m.embed(|e| {
-                                e.title("Math");
-                                e.description(HELP_MESSAGE_MATH);
-                                e.color(ORANGE);
-                                e
-                            });
-                            m
-                        }).await?,
-        _ =>     msg.channel_id.send_message(&ctx, |m| {
-                            m.content(&msg.content);
-                            m.embed(|e| {
-                                e.title("Help");
-                                e.description(HELP_MESSAGE);
-                                e.color(ORANGE);
-                                e
-                            });
-                            m
-                        }).await?,
+        "coinflip" =>   message_builder(ctx, msg, HELP_MESSAGE_COIN, 
+                                        "Coinflip").await?,
+        "diceroll" =>   message_builder(ctx, msg, HELP_MESSAGE_DICE, 
+                                        "Diceroll").await?,
+        "crypto" =>     message_builder(ctx, msg, HELP_MESSAGE_CRYPTO, 
+                                        "Crypto").await?,
+        "math" =>       message_builder(ctx, msg, HELP_MESSAGE_MATH, 
+                                        "Math").await?,
+        _ =>            message_builder(ctx, msg, HELP_MESSAGE,
+                                        "Help").await?,
     };
-
     Ok(())
 }
 
@@ -167,5 +126,20 @@ async fn crypto(ctx: &Context, msg: &Message) -> CommandResult {
         error!("Error sending message: {:?}", why);
     }
 
+    Ok(())
+}
+
+async fn message_builder(ctx: &Context, msg: &Message, help: &str, 
+                         title: &str) -> CommandResult {
+    msg.channel_id.send_message(&ctx, |m| {
+        m.content(&msg.content);
+        m.embed(|e| {
+            e.title(title);
+            e.description(help);
+            e.color(ORANGE);
+            e
+        });
+        m
+    }).await?;
     Ok(())
 }
